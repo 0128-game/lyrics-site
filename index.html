@@ -4,112 +4,342 @@
     <meta charset="UTF-8">
     <title>歌詞検索ツール</title>
     <style>
-        :root {
-            --primary-color: #4a90e2;
-            --danger-color: #e04a4a;
-            --bg-color: #f5f7fa;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-        }
+:root {
+    --primary-color: #4f46e5;       /* メインのインディゴブルー */
+    --primary-hover: #4338ca;
+    --danger-color: #ef4444;        /* 削除ボタン等のレッド */
+    --danger-hover: #dc2626;
+    --warning-color: #f59e0b;       /* 編集ボタン等のイエロー */
+    --warning-hover: #d97706;
+    --bg-color: #f8fafc;            /* 明るく目に優しい背景色 */
+    --card-bg: #ffffff;
+    --text-color: #1e293b;          /* 視認性の高いダークグレー */
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.02);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+}
 
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-        }
+/* 全体ベース */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 24px 16px;
+}
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
 
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #ddd;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
+/* ヘッダー */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 16px;
+}
 
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
+header h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(135deg, var(--primary-color), #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
-        button:hover { opacity: 0.9; }
-        
-        .btn-danger { background-color: var(--danger-color); }
+header div {
+    display: flex;
+    gap: 8px;
+}
 
-        .view-section { display: none; }
-        .view-section.active { display: block; }
+/* ボタン共通 */
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
 
-        /* フォームスタイル */
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .required::after {
-            content: " ★";
-            color: var(--danger-color);
-        }
+button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
 
-        /* 検索・リストスタイル */
-        .search-box {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .song-item {
-            background: var(--card-bg);
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+button:active {
+    transform: translateY(0);
+}
 
-        /* 歌詞詳細 */
-        .lyrics-text {
-            white-space: pre-wrap;
-            background: #eee;
-            padding: 15px;
-            border-radius: 4px;
-        }
-        .video-container {
-            margin-top: 15px;
-        }
+.btn-danger {
+    background-color: var(--danger-color);
+}
+.btn-danger:hover {
+    background-color: var(--danger-hover);
+}
 
-        /* 印刷用設定 */
-        @media print {
-            body { background: white; color: black; }
-            .no-print { display: none !important; }
-            .print-only { display: block !important; }
-            .song-item { border-bottom: 1px solid #ccc; box-shadow: none; }
-        }
-        .print-only { display: none; }
+/* セクション切り替え */
+.view-section {
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+}
+.view-section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* フォーム要素 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.required::after {
+    content: " (必須)";
+    color: var(--danger-color);
+    font-size: 0.8rem;
+    font-weight: normal;
+}
+
+input[type="text"],
+input[type="url"],
+textarea {
+    width: 100%;
+    padding: 12px 16px;
+    box-sizing: border-box;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* 検索ボックス */
+.search-box {
+    background: var(--card-bg);
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+}
+
+.search-box h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+/* 印刷オプションエリア */
+#print-list-options, #print-detail-options {
+    margin-top: 12px;
+    padding: 12px;
+    background-color: var(--bg-color);
+    border-radius: 6px;
+    color: var(--text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+#print-list-options label, #print-detail-options label {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
+}
+
+/* 曲リスト一覧 */
+.song-item {
+    background: var(--card-bg);
+    padding: 20px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.song-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.song-item strong {
+    font-size: 1.1rem;
+    color: var(--text-color);
+}
+
+.song-item small {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: var(--primary-color);
+}
+
+.song-item div:last-child {
+    display: flex;
+    gap: 8px;
+}
+
+/* 詳細表示 */
+#detail-view article {
+    background: var(--card-bg);
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+}
+
+#detail-view h2 {
+    font-size: 1.8rem;
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+#view-link-str {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+#view-link-str a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+#view-link-str a:hover {
+    text-decoration: underline;
+}
+
+/* 歌詞表示エリア */
+.lyrics-text {
+    white-space: pre-wrap;
+    background: var(--bg-color);
+    padding: 24px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #334155;
+    margin: 16px 0;
+}
+
+/* メモエリア */
+#view-memo-section {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--border-color);
+}
+
+#view-memo {
+    color: var(--text-muted);
+    background-color: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin: 8px 0 0 0;
+}
+
+/* YouTubeプレイヤー埋め込みコンテナ */
+.video-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+/* バックアップセクション */
+#backup-view {
+    background: var(--card-bg);
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+}
+
+#backup-view h2 {
+    margin-top: 0;
+    margin-bottom: 24px;
+}
+
+#backup-view h3 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+#backup-view hr {
+    border: 0;
+    height: 1px;
+    background: var(--border-color);
+    margin: 24px 0;
+}
+
+/* 印刷用設定（実体） */
+@media print {
+    body {
+        background: white !important;
+        color: black !important;
+        padding: 0;
+    }
+    .no-print {
+        display: none !important;
+    }
+    #detail-view article {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+    .lyrics-text {
+        background: none !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+}
     </style>
 </head>
 <body>
